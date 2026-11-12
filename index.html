@@ -1,0 +1,1454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conference board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #F2F4F6;
+  --surface: #FFFFFF;
+  --head: #E9EDF1;
+  --ink: #16212C;
+  --ink-2: #4A5866;
+  --ink-3: #75828F;
+  --rule: #D7DDE4;
+  --rule-2: #B8C2CC;
+  --accent: #1E6B4F;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCEEE5;
+  --danger: #B3261E;
+  --t-green: #DAF1E2;
+  --t-yellow: #FFF1BF;
+  --t-blue: #DAE8F7;
+  --t-pink: #FBE0E9;
+  --t-purple: #E8E0F7;
+  --t-orange: #FCE4CF;
+  --t-grey: #E7EAEE;
+  --hot-bg: #F8D5D1; --hot-ink: #8A1C14;
+  --warm-bg: #FFE5A8; --warm-ink: #6A4600;
+  --cool-bg: #E4E9EE; --cool-ink: #3E4C59;
+  --shadow: 0 8px 28px rgba(16, 24, 32, .16);
+  --gutter: 44px;
+  --pad-x: clamp(12px, 3vw, 32px);
+  --font: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-cond: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #10151A;
+    --surface: #172029;
+    --head: #1D2731;
+    --ink: #E4E9EE;
+    --ink-2: #A5B2BE;
+    --ink-3: #7D8A96;
+    --rule: #29333D;
+    --rule-2: #3A4650;
+    --accent: #5CC79A;
+    --accent-ink: #0D1A13;
+    --accent-soft: #1C3A2C;
+    --danger: #FF8A80;
+    --t-green: #1D3A29;
+    --t-yellow: #3A3315;
+    --t-blue: #1A2E44;
+    --t-pink: #3D222F;
+    --t-purple: #2E2643;
+    --t-orange: #3E2917;
+    --t-grey: #242C34;
+    --hot-bg: #4B1F1B; --hot-ink: #FFC1BA;
+    --warm-bg: #463410; --warm-ink: #FFDB8F;
+    --cool-bg: #26303A; --cool-ink: #B9C6D2;
+    --shadow: 0 10px 32px rgba(0, 0, 0, .55);
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 var(--font);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  -webkit-text-size-adjust: 100%;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.top { padding: 20px var(--pad-x) 12px; display: grid; gap: 14px; }
+.titlebar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font: 600 clamp(21px, 2.5vw, 27px)/1.15 var(--font-cond); margin: 0; letter-spacing: -0.005em; }
+h1 .rename { all: unset; cursor: pointer; border-bottom: 1px dashed var(--rule-2); }
+h1 .rename:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.updated { color: var(--ink-3); font-size: 13px; margin: 3px 0 0; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 500; font-size: 14px; line-height: 1;
+  padding: 9px 13px; min-height: 36px;
+  border-radius: 8px; border: 1px solid var(--rule-2);
+  background: var(--surface); cursor: pointer;
+}
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.upnext {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 18px; row-gap: 6px; align-items: center;
+  padding: 14px 0 12px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.upnext .count { display: flex; align-items: baseline; gap: 6px; }
+.upnext .num { font: 600 clamp(46px, 6.5vw, 68px)/.9 var(--font-cond); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.upnext .unit { font: 500 17px/1 var(--font-cond); color: var(--ink-2); }
+.upnext .count.hot .num { color: var(--hot-ink); }
+.upnext .count.warm .num { color: var(--warm-ink); }
+.upnext .what { font-size: 17px; line-height: 1.35; max-width: 70ch; }
+.upnext .when { font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+.upnext .then { grid-column: 1 / -1; margin: 0; font-size: 14px; color: var(--ink-2); }
+.upnext .then strong { color: var(--ink); font-weight: 600; }
+.upnext .none { grid-column: 1 / -1; margin: 0; color: var(--ink-2); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.key { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px 5px 8px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--surface);
+  font-size: 13px; cursor: pointer; min-height: 30px;
+}
+.chip .sw { width: 13px; height: 13px; border-radius: 3px; border: 1px solid var(--rule-2); flex: none; }
+.chip[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.search { flex: 0 1 340px; }
+.search input {
+  width: 100%; padding: 8px 11px; min-height: 36px;
+  border-radius: 8px; border: 1px solid var(--rule-2); background: var(--surface); font-size: 14px;
+}
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
+.filters:empty { display: none; }
+.linkbtn { all: unset; cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.linkbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- edit toolbar ---------- */
+.toolbar {
+  margin: 0 var(--pad-x) 10px;
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  padding: 8px 10px; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 10px;
+  position: sticky; top: 0; z-index: 20;
+}
+.toolbar[hidden] { display: none; }
+.tb-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.tb-label { font-size: 12px; color: var(--ink-3); margin-right: 2px; }
+.tb-btn { min-height: 32px; padding: 6px 10px; font-size: 13px; }
+.swatch {
+  width: 22px; height: 22px; border-radius: 5px; padding: 0;
+  border: 1px solid var(--rule-2); cursor: pointer; flex: none;
+}
+.swatch.none { background: linear-gradient(135deg, transparent 44%, var(--ink-3) 45% 55%, transparent 56%), var(--surface); }
+.swatch[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 1px; }
+.status { margin-left: auto; font-size: 13px; color: var(--ink-2); }
+.status.bad { color: var(--danger); }
+.hint { flex-basis: 100%; font-size: 12px; color: var(--ink-3); margin: 0; }
+
+/* ---------- sheet ---------- */
+.sheet-wrap {
+  margin: 0 var(--pad-x) 28px;
+  background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 10px;
+  overflow: auto; max-height: calc(100dvh - 24px);
+}
+.sheet-wrap:focus { outline: none; }
+table.grid { border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.grid th, .grid td {
+  border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  vertical-align: top; text-align: left;
+}
+.grid th {
+  position: sticky; top: 0; z-index: 3;
+  background: var(--head);
+  font: 600 13px/1.25 var(--font-cond); color: var(--ink-2);
+  padding: 0; border-bottom-color: var(--rule-2);
+}
+.grid .th-in { display: flex; align-items: flex-start; gap: 4px; padding: 9px 8px 9px 10px; }
+.grid .th-name { flex: 1; overflow-wrap: anywhere; }
+.grid td {
+  background: var(--surface);
+  padding: 8px 10px; font-size: 14px; line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+.grid tr.tint-green > td { background: var(--t-green); }
+.grid tr.tint-yellow > td { background: var(--t-yellow); }
+.grid tr.tint-blue > td { background: var(--t-blue); }
+.grid tr.tint-pink > td { background: var(--t-pink); }
+.grid tr.tint-purple > td { background: var(--t-purple); }
+.grid tr.tint-orange > td { background: var(--t-orange); }
+.grid tr.tint-grey > td { background: var(--t-grey); }
+.grid .gutter {
+  position: sticky; left: 0; z-index: 2;
+  background: var(--head) !important;
+  text-align: center; color: var(--ink-3); font-size: 12px; padding: 8px 2px;
+}
+.grid th.gutter { z-index: 4; }
+.grid .gutter .num { display: block; }
+.grid [data-first] { position: sticky; left: var(--gutter); z-index: 1; box-shadow: 1px 0 0 var(--rule-2); }
+.grid th[data-first] { z-index: 4; }
+.grid td[data-first] { font-weight: 600; }
+.grid td.b .cell { font-weight: 600; }
+.grid td.is-sel { outline: 2px solid var(--accent); outline-offset: -2px; }
+.grid.is-edit td[data-col] { cursor: cell; }
+.grid td.is-editing { outline: 2px solid var(--accent); outline-offset: -2px; cursor: text; }
+.grid .cell { min-height: 1.4em; }
+.grid .ln { min-height: 1.42em; }
+.grid .ln.blank { min-height: .6em; }
+.grid .ln.dated.next { font-weight: 600; }
+.grid .ln.past { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--rule-2); }
+.grid .ln.ist { font-size: 12.5px; color: var(--ink-2); min-height: 0; margin-bottom: 1px; }
+.grid .ln.ist.past { text-decoration: none; }
+.pill {
+  display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; line-height: 1.5; white-space: nowrap; vertical-align: 1px;
+}
+.pill.hot { background: var(--hot-bg); color: var(--hot-ink); }
+.pill.warm { background: var(--warm-bg); color: var(--warm-ink); }
+.pill.cool { background: var(--cool-bg); color: var(--cool-ink); }
+.pill.past { background: transparent; color: var(--ink-3); border: 1px solid var(--rule-2); }
+.pill.next { font-weight: 600; box-shadow: inset 0 0 0 1.5px currentColor; }
+.tag {
+  display: inline-block; margin: 0 4px 4px 0; padding: 2px 8px;
+  border-radius: 6px; border: 1px solid var(--rule-2); background: var(--surface);
+  font: 500 13px/1.4 var(--font); text-align: left; max-width: 100%;
+  cursor: pointer; overflow-wrap: anywhere;
+}
+.tag[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.grid.is-edit .tag { cursor: cell; }
+.empty { color: var(--ink-3); font-style: italic; font-size: 13px; font-weight: 400; }
+.hbtn {
+  border: 0; background: transparent; color: var(--ink-3);
+  width: 24px; height: 24px; border-radius: 6px; padding: 0; cursor: pointer;
+  display: inline-grid; place-items: center; flex: none;
+}
+.hbtn:hover { background: var(--rule); color: var(--ink); }
+.hbtn svg { width: 16px; height: 16px; fill: currentColor; }
+.gutter .hbtn { margin: 4px auto 0; }
+.resize { position: absolute; top: 0; right: -4px; width: 8px; height: 100%; cursor: col-resize; z-index: 5; touch-action: none; }
+.resize:hover, .resize.on { background: linear-gradient(to right, transparent 3px, var(--accent) 3px 5px, transparent 5px); }
+th.addcol, td.addcol-spacer { background: var(--head) !important; }
+th.addcol .th-in { justify-content: center; }
+.addrow-cell { padding: 0 !important; background: var(--surface) !important; }
+.addrow-btn {
+  width: 100%; text-align: left; border: 0; background: transparent; cursor: pointer;
+  padding: 10px 12px; color: var(--accent); font-weight: 500; font-size: 14px;
+}
+.addrow-btn:hover { background: var(--accent-soft); }
+.noresults td { padding: 20px 14px; color: var(--ink-2); }
+
+textarea.ed {
+  display: block; width: 100%; min-height: 1.42em; border: 0; margin: 0; padding: 0;
+  background: transparent; resize: none; outline: none; overflow: hidden;
+  font-size: 14px; line-height: 1.42; font-weight: inherit;
+}
+.tag-ed { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.tag-ed .tag { margin: 0; cursor: default; display: inline-flex; align-items: center; gap: 4px; }
+.tag-ed .x { border: 0; background: none; padding: 0 2px; cursor: pointer; color: var(--ink-3); font-size: 15px; line-height: 1; }
+.tag-ed .x:hover { color: var(--danger); }
+.tag-in { flex: 1 0 140px; min-width: 120px; border: 0; border-bottom: 1px dashed var(--rule-2); background: transparent; padding: 2px 0; outline: none; font-size: 14px; }
+
+/* ---------- menus, dialogs, toast ---------- */
+.menu {
+  position: fixed; z-index: 50; min-width: 210px; max-width: 280px;
+  background: var(--surface); border: 1px solid var(--rule-2); border-radius: 10px;
+  box-shadow: var(--shadow); padding: 6px;
+}
+.menu[hidden] { display: none; }
+.menu .item {
+  display: flex; justify-content: space-between; width: 100%; text-align: left;
+  padding: 8px 10px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 14px;
+}
+.menu .item:hover, .menu .item:focus-visible { background: var(--accent-soft); outline: none; }
+.menu .item.danger { color: var(--danger); }
+.menu .item:disabled { opacity: .4; cursor: default; background: none; }
+.menu .sep { height: 1px; background: var(--rule); margin: 5px 4px; }
+.menu .msw { padding: 6px 10px 8px; }
+.menu .msw-label { font-size: 12px; color: var(--ink-3); display: block; margin-bottom: 6px; }
+.menu .swatches { display: flex; gap: 5px; flex-wrap: wrap; }
+
+dialog {
+  border: 1px solid var(--rule-2); border-radius: 12px; padding: 20px;
+  background: var(--surface); color: var(--ink);
+  width: min(430px, calc(100vw - 28px)); box-shadow: var(--shadow);
+}
+dialog::backdrop { background: rgba(10, 16, 22, .45); }
+dialog h2 { font: 600 19px/1.25 var(--font-cond); margin: 0 0 14px; }
+dialog p.lead { margin: -6px 0 14px; color: var(--ink-2); font-size: 14px; }
+.field { display: grid; gap: 5px; margin-bottom: 12px; font-size: 13px; color: var(--ink-2); }
+.field input, .field select {
+  width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--rule-2);
+  background: var(--surface); color: var(--ink); font-size: 15px;
+}
+.field .lab { display: flex; align-items: center; gap: 7px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; margin-bottom: 12px; }
+.err { color: var(--danger); font-size: 13px; min-height: 1em; margin: 0 0 10px; }
+.dlg-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  z-index: 60; max-width: min(560px, calc(100vw - 24px));
+  background: var(--ink); color: var(--surface); padding: 11px 14px; border-radius: 10px;
+  box-shadow: var(--shadow); font-size: 14px; display: flex; gap: 12px; align-items: center;
+}
+.toast[hidden] { display: none; }
+.toast button { all: unset; cursor: pointer; font-weight: 600; text-decoration: underline; }
+
+/* ---------- phones: rows become cards ---------- */
+@media (max-width: 760px) {
+  .sheet-wrap { background: transparent; border: 0; border-radius: 0; overflow: visible; max-height: none; margin: 0 10px 24px; }
+  table.grid, .grid tbody, .grid tfoot, .grid tr, .grid td { display: block; width: auto !important; }
+  .grid colgroup, .grid thead { display: none; }
+  .grid tbody tr { margin-bottom: 12px; border: 1px solid var(--rule-2); border-radius: 12px; overflow: hidden; }
+  .grid td { border-right: 0; padding: 8px 12px; }
+  .grid [data-first] { position: static; box-shadow: none; font-size: 17px; }
+  .grid td[data-label]::before {
+    content: attr(data-label); display: block;
+    font: 600 12px/1.3 var(--font-cond); color: var(--ink-3); margin-bottom: 2px;
+  }
+  .grid td[data-first]::before { display: none; }
+  .grid td.gutter { position: static; display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 4px 8px 4px 12px; }
+  .grid .gutter .hbtn { margin: 0; }
+  .grid td.addcol-spacer { display: none; }
+  .grid tfoot td { border: 1px dashed var(--rule-2); border-radius: 12px; }
+  .upnext { grid-template-columns: 1fr; }
+  .search { flex-basis: 100%; }
+  .status { margin-left: 0; flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media print {
+  .actions, .toolbar, .controls { display: none !important; }
+  .sheet-wrap { max-height: none; overflow: visible; border: 0; }
+  .grid th, .grid td, .grid [data-first] { position: static; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="titlebar">
+    <div>
+      <h1 id="h1"><span id="title">Conference board</span></h1>
+      <p class="updated" id="updated"></p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="csvBtn" type="button">Download CSV</button>
+      <button class="btn primary" id="editBtn" type="button">Edit</button>
+    </div>
+  </div>
+  <section class="upnext" id="upnext" aria-live="polite"></section>
+  <div class="controls">
+    <div class="key" id="key" aria-label="Colour key, click to filter"></div>
+    <div class="search"><input id="search" type="search" placeholder="Search conferences, tracks, papers" aria-label="Search the board"></div>
+  </div>
+  <div class="filters" id="filters"></div>
+</header>
+
+<div class="toolbar" id="toolbar" hidden>
+  <div class="tb-group">
+    <button class="btn tb-btn" id="undoBtn" type="button" title="Undo (Ctrl+Z)">Undo</button>
+    <button class="btn tb-btn" id="redoBtn" type="button" title="Redo (Ctrl+Y)">Redo</button>
+  </div>
+  <div class="tb-group">
+    <button class="btn tb-btn" id="boldBtn" type="button" title="Bold cell (Ctrl+B)" aria-pressed="false"><b>Bold</b></button>
+  </div>
+  <div class="tb-group" id="rowSw"><span class="tb-label">Row colour</span></div>
+  <div class="tb-group" id="cellSw"><span class="tb-label">Cell colour</span></div>
+  <div class="tb-group">
+    <button class="btn tb-btn" id="addRowBtn" type="button">Add row</button>
+    <button class="btn tb-btn" id="addColBtn" type="button">Add column</button>
+    <button class="btn tb-btn" id="keyBtn" type="button">Colour key</button>
+  </div>
+  <span class="status" id="status" role="status"></span>
+  <p class="hint">Click a cell to select it; click again, press Enter or just type to edit. Enter saves, Shift+Enter starts a new line, Esc cancels. Write dates as <b>5 Dec 2026, 23:59 AoE</b> to get the IST time and a countdown. Put text between **double stars** to make it bold.</p>
+</div>
+
+<main class="sheet-wrap" id="sheet" tabindex="-1">
+  <table class="grid" id="grid" aria-label="Conference deadlines"></table>
+</main>
+
+<datalist id="tagList"></datalist>
+<div class="menu" id="menu" role="menu" hidden></div>
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+
+const API = '/api/data';
+const AUTH = '/api/auth';
+const KEY_STORE = 'conference-board-edit-key';
+const TINTS = ['green', 'yellow', 'blue', 'pink', 'purple', 'orange', 'grey'];
+const COLOUR_NAMES = { none: 'No colour', green: 'Green', yellow: 'Yellow', blue: 'Blue', pink: 'Pink', purple: 'Purple', orange: 'Orange', grey: 'Grey' };
+const MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// "5 Dec 2026, 23:59 AoE" (time optional, AoE or UTC)
+const DATE_RE = /\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s+(\d{4})(?:,?\s*(?:at\s+)?(\d{1,2}):(\d{2}))?\s*(aoe|utc)\b/i;
+const GUTTER = 44, ADD_W = 44, MIN_W = 70, MAX_W = 900;
+const COARSE = matchMedia('(pointer: coarse)').matches;
+const ICON_MORE = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg>';
+
+const state = {
+  doc: null, version: 0, updatedAt: null, storage: 'none', reachable: true,
+  edit: false, key: null, sel: null, editing: null,
+  undo: [], redo: [],
+  filter: { text: '', colour: null, tag: null },
+  saveTimer: null, saving: false, saveAgain: false, dirty: false, conflict: false,
+};
+
+const $ = (s) => document.querySelector(s);
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v === undefined || v === null) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k === 'html') n.innerHTML = v;            // only used for constant icons
+    else if (k === 'attrs') { for (const [a, b] of Object.entries(v)) if (b !== null && b !== undefined) n.setAttribute(a, b); }
+    else n[k] = v;
+  }
+  for (const c of kids) if (c !== null && c !== undefined) n.append(c);
+  return n;
+}
+const uid = () => 'x' + Math.random().toString(36).slice(2, 10);
+const clampW = (w) => Math.max(MIN_W, Math.min(MAX_W, Math.round(w) || 180));
+const getCol = (id) => state.doc.columns.find((c) => c.id === id);
+const getRow = (id) => state.doc.rows.find((r) => r.id === id);
+const stripStars = (s) => String(s ?? '').replace(/\*\*/g, '');
+function cellText(row, col) {
+  const v = row.cells[col.id];
+  if (col.type === 'tags') return Array.isArray(v) ? v.join(', ') : '';
+  return stripStars(v);
+}
+
+/* ---------- dates ---------- */
+function parseDeadline(m) {
+  const day = +m[1], mon = MONTHS[m[2].slice(0, 3).toLowerCase()], y = +m[3];
+  const hh = m[4] != null ? +m[4] : 23, mm = m[5] != null ? +m[5] : 59;
+  const offset = m[6].toLowerCase() === 'aoe' ? 12 : 0;      // AoE is UTC-12
+  return Date.UTC(y, mon, day, hh + offset, mm);
+}
+function fmtShifted(t, hours, suffix) {
+  const d = new Date(t + hours * 3600e3);
+  const hh = String(d.getUTCHours()).padStart(2, '0'), mi = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${WD[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${hh}:${mi} ${suffix}`;
+}
+const fmtAoE = (t) => fmtShifted(t, -12, 'AoE');
+const fmtIST = (t) => fmtShifted(t, 5.5, 'IST');
+function countdown(t) {
+  const diff = t - Date.now();
+  const days = Math.floor(diff / 864e5);
+  const cls = days <= 14 ? 'hot' : days <= 30 ? 'warm' : 'cool';
+  if (days >= 1) return { num: days, unit: days === 1 ? 'day' : 'days', cls };
+  const h = Math.max(1, Math.floor(diff / 36e5));
+  return { num: h, unit: h === 1 ? 'hour' : 'hours', cls };
+}
+function fmtLocal(iso) {
+  return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+/* ---------- load and normalise ---------- */
+function normalise(d) {
+  d = d && typeof d === 'object' ? d : {};
+  d.meta = d.meta && typeof d.meta === 'object' ? d.meta : {};
+  if (typeof d.meta.title !== 'string' || !d.meta.title.trim()) d.meta.title = 'Conference board';
+  if (!Array.isArray(d.meta.legend)) d.meta.legend = [];
+  d.meta.legend = d.meta.legend.filter((l) => l && TINTS.includes(l.colour) && l.label);
+  d.columns = (Array.isArray(d.columns) ? d.columns : []).map((c) => ({
+    id: typeof c.id === 'string' ? c.id : uid(),
+    name: String(c.name ?? 'Column'),
+    type: c.type === 'tags' ? 'tags' : 'text',
+    width: clampW(+c.width),
+  }));
+  d.rows = (Array.isArray(d.rows) ? d.rows : []).map((r) => ({
+    id: typeof r.id === 'string' ? r.id : uid(),
+    colour: TINTS.includes(r.colour) ? r.colour : 'none',
+    cells: r.cells && typeof r.cells === 'object' ? r.cells : {},
+    styles: r.styles && typeof r.styles === 'object' ? r.styles : {},
+  }));
+  return d;
+}
+
+async function load() {
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json();
+    state.doc = normalise(j.doc);
+    state.version = j.version || 0;
+    state.updatedAt = j.updatedAt;
+    state.storage = j.storage;
+  } catch (e) {
+    state.reachable = false;
+    try {
+      const r = await fetch('data/seed.json', { cache: 'no-store' });
+      state.doc = normalise(await r.json());
+    } catch (_) {
+      state.doc = normalise({});
+    }
+  }
+  renderAll();
+}
+
+/* ---------- filtering ---------- */
+function rowVisible(r) {
+  const f = state.filter, cols = state.doc.columns;
+  if (f.colour && r.colour !== f.colour) return false;
+  if (f.tag && !cols.some((c) => c.type === 'tags' && Array.isArray(r.cells[c.id]) && r.cells[c.id].includes(f.tag))) return false;
+  if (f.text) {
+    const q = f.text.toLowerCase();
+    if (!cols.map((c) => cellText(r, c)).join('\n').toLowerCase().includes(q)) return false;
+  }
+  return true;
+}
+
+/* ---------- rendering ---------- */
+function renderAll() {
+  renderHeader();
+  renderToolbar();
+  renderGrid();
+  renderTagList();
+}
+
+function renderHeader() {
+  const d = state.doc;
+  document.title = d.meta.title;
+  const h1 = $('#h1');
+  h1.textContent = '';
+  if (state.edit) {
+    const b = el('button', { class: 'rename', type: 'button', text: d.meta.title, title: 'Rename the board' });
+    b.onclick = renameBoard;
+    h1.append(b);
+  } else {
+    h1.append(el('span', { text: d.meta.title }));
+  }
+  let up = '';
+  if (!state.reachable) up = 'Showing the starting data. Saved changes appear once the site runs on Vercel.';
+  else if (state.updatedAt) up = `Last updated ${fmtLocal(state.updatedAt)}`;
+  $('#updated').textContent = up;
+
+  const key = $('#key');
+  key.textContent = '';
+  for (const item of d.meta.legend) {
+    const on = state.filter.colour === item.colour;
+    const chip = el('button', { class: 'chip', type: 'button', attrs: { 'aria-pressed': String(on), title: on ? 'Show all rows' : 'Show only these rows' } },
+      el('span', { class: 'sw' }), el('span', { text: item.label }));
+    chip.querySelector('.sw').style.background = `var(--t-${item.colour})`;
+    chip.onclick = () => { state.filter.colour = on ? null : item.colour; select(null); renderAll(); };
+    key.append(chip);
+  }
+  $('#editBtn').textContent = state.edit ? 'Done editing' : 'Edit';
+  $('#editBtn').classList.toggle('primary', !state.edit);
+  renderUpNext();
+  renderFilters();
+}
+
+function collectDeadlines() {
+  const out = [], now = Date.now(), d = state.doc, first = d.columns[0];
+  for (const r of d.rows) {
+    const name = first ? cellText(r, first).split('\n')[0].trim() : '';
+    for (const c of d.columns) {
+      if (c.type !== 'text') continue;
+      const lines = String(r.cells[c.id] ?? '').split('\n');
+      lines.forEach((ln, i) => {
+        const plain = stripStars(ln);
+        const m = plain.match(DATE_RE);
+        if (!m) return;
+        const t = parseDeadline(m);
+        if (t <= now) return;
+        let label = '';
+        for (let j = i - 1; j >= 0; j--) {
+          const p = stripStars(lines[j]).trim();
+          if (!p) break;
+          if (!DATE_RE.test(p) && !/\bIST\b/.test(p)) { label = p; break; }
+        }
+        if (!label) label = plain.replace(DATE_RE, '').replace(/[\s,:;-]+$/, '').trim() || c.name;
+        label = label.replace(/\s*\([^)]*\)/g, '').replace(/[:\s]+$/, '').trim();
+        out.push({ t, name, label });
+      });
+    }
+  }
+  return out.sort((a, b) => a.t - b.t);
+}
+
+function renderUpNext() {
+  const box = $('#upnext');
+  box.textContent = '';
+  const list = collectDeadlines();
+  if (!list.length) {
+    box.append(el('p', { class: 'none', text: 'No upcoming deadlines yet. Write a date like 5 Dec 2026, 23:59 AoE in any cell and it will appear here.' }));
+    return;
+  }
+  const n = list[0], c = countdown(n.t);
+  box.append(
+    el('div', { class: `count ${c.cls}` }, el('span', { class: 'num', text: String(c.num) }), el('span', { class: 'unit', text: `${c.unit} left` })),
+    el('div', {},
+      el('div', { class: 'what' }, el('strong', { text: n.name }), document.createTextNode(`: ${n.label}`)),
+      el('div', { class: 'when', text: `${fmtAoE(n.t)}, which is ${fmtIST(n.t)}` }))
+  );
+  const rest = list.slice(1, 5);
+  if (rest.length) {
+    const p = el('p', { class: 'then' }, document.createTextNode('After that: '));
+    rest.forEach((x, i) => {
+      const cd = countdown(x.t);
+      if (i) p.append(document.createTextNode('; '));
+      p.append(el('strong', { text: x.name }), document.createTextNode(` ${x.label.charAt(0).toLowerCase() + x.label.slice(1)} in ${cd.num} ${cd.unit}`));
+    });
+    box.append(p);
+  }
+}
+
+function renderFilters() {
+  const box = $('#filters');
+  box.textContent = '';
+  const f = state.filter;
+  if (!f.tag && !f.colour && !f.text) return;
+  const shown = state.doc.rows.filter(rowVisible).length;
+  box.append(document.createTextNode(`Showing ${shown} of ${state.doc.rows.length} rows`));
+  if (f.tag) box.append(document.createTextNode(` with paper "${f.tag}"`));
+  const clear = el('button', { class: 'linkbtn', type: 'button', text: 'Show all' });
+  clear.onclick = () => { state.filter = { text: '', colour: null, tag: null }; $('#search').value = ''; renderAll(); };
+  box.append(clear);
+}
+
+function renderToolbar() {
+  const tb = $('#toolbar');
+  tb.hidden = !state.edit;
+  if (!state.edit) return;
+  $('#undoBtn').disabled = !state.undo.length;
+  $('#redoBtn').disabled = !state.redo.length;
+  const sel = state.sel;
+  const row = sel && getRow(sel.rowId);
+  const st = row && row.styles[sel.colId];
+  $('#boldBtn').disabled = !sel;
+  $('#boldBtn').setAttribute('aria-pressed', String(!!(st && st.bold)));
+  paintSwatches($('#rowSw'), row ? row.colour : null, !row, (c) => row && mutate(() => { row.colour = c; }));
+  paintSwatches($('#cellSw'), st && st.bg ? st.bg : (sel ? 'none' : null), !sel, (c) => setCellStyle({ bg: c === 'none' ? undefined : c }));
+}
+
+function paintSwatches(group, current, disabled, pick) {
+  group.querySelectorAll('.swatch').forEach((s) => s.remove());
+  for (const c of ['none', ...TINTS]) {
+    const b = el('button', { class: 'swatch' + (c === 'none' ? ' none' : ''), type: 'button', title: COLOUR_NAMES[c], attrs: { 'aria-label': COLOUR_NAMES[c], 'aria-pressed': String(current === c) } });
+    if (c !== 'none') b.style.background = `var(--t-${c})`;
+    b.disabled = disabled;
+    b.addEventListener('pointerdown', (e) => e.preventDefault());
+    b.onclick = () => pick(c);
+    group.append(b);
+  }
+}
+
+function renderTagList() {
+  const all = new Set();
+  for (const r of state.doc.rows) for (const c of state.doc.columns) if (c.type === 'tags' && Array.isArray(r.cells[c.id])) r.cells[c.id].forEach((t) => all.add(t));
+  const dl = $('#tagList');
+  dl.textContent = '';
+  [...all].sort().forEach((t) => dl.append(el('option', { value: t })));
+}
+
+function renderRich(box, text) {
+  const now = Date.now();
+  const lines = text.split('\n');
+  const dates = lines.map((l) => { const m = stripStars(l).match(DATE_RE); return m ? parseDeadline(m) : null; });
+  let nextIdx = -1, best = Infinity;
+  dates.forEach((t, i) => { if (t && t > now && t < best) { best = t; nextIdx = i; } });
+  let bold = false;
+  lines.forEach((line, i) => {
+    const ln = el('div', { class: 'ln' });
+    if (!line.trim()) ln.classList.add('blank');
+    line.split('**').forEach((part, k) => {
+      if (k > 0) bold = !bold;
+      if (!part) return;
+      ln.append(bold ? el('strong', { text: part }) : document.createTextNode(part));
+    });
+    const t = dates[i];
+    if (t) {
+      const past = t <= now;
+      ln.classList.add(past ? 'past' : 'dated');
+      if (i === nextIdx) ln.classList.add('next');
+      if (past) ln.append(el('span', { class: 'pill past', text: 'passed' }));
+      else {
+        const cd = countdown(t);
+        ln.append(el('span', { class: `pill ${cd.cls}${i === nextIdx ? ' next' : ''}`, text: `${cd.num} ${cd.unit}` }));
+      }
+    }
+    box.append(ln);
+    if (t) box.append(el('div', { class: 'ln ist' + (t <= now ? ' past' : ''), text: fmtIST(t) }));
+  });
+}
+
+function renderCell(col, value) {
+  const box = el('div', { class: 'cell' });
+  if (col.type === 'tags') {
+    const arr = Array.isArray(value) ? value : [];
+    if (!arr.length && state.edit) box.append(el('span', { class: 'empty', text: 'Add papers' }));
+    for (const t of arr) {
+      const on = state.filter.tag === t;
+      const b = el('button', { class: 'tag', type: 'button', text: t, attrs: { 'aria-pressed': String(on), title: state.edit ? null : (on ? 'Show all rows' : 'Show rows with this paper') } });
+      b.dataset.tag = t;
+      if (state.edit) b.tabIndex = -1;
+      box.append(b);
+    }
+  } else {
+    renderRich(box, String(value ?? ''));
+  }
+  return box;
+}
+
+function renderGrid() {
+  const d = state.doc, t = $('#grid'), cols = d.columns;
+  t.textContent = '';
+  t.classList.toggle('is-edit', state.edit);
+  t.style.width = (GUTTER + cols.reduce((s, c) => s + c.width, 0) + (state.edit ? ADD_W : 0)) + 'px';
+
+  const cg = el('colgroup');
+  const gcol = el('col'); gcol.style.width = GUTTER + 'px'; cg.append(gcol);
+  for (const c of cols) { const col = el('col'); col.style.width = c.width + 'px'; col.dataset.col = c.id; cg.append(col); }
+  if (state.edit) { const ac = el('col'); ac.style.width = ADD_W + 'px'; cg.append(ac); }
+  t.append(cg);
+
+  const thead = el('thead'), hr = el('tr');
+  hr.append(el('th', { class: 'gutter', attrs: { scope: 'col' } }, el('span', { class: 'num', text: '#', attrs: { 'aria-label': 'Row number' } })));
+  cols.forEach((c, i) => {
+    const th = el('th', { attrs: { scope: 'col' } });
+    th.dataset.col = c.id;
+    if (i === 0) th.dataset.first = '';
+    const inner = el('div', { class: 'th-in' }, el('span', { class: 'th-name', text: c.name }));
+    th.append(inner);
+    if (state.edit) {
+      inner.append(el('button', { class: 'hbtn colmenu', type: 'button', html: ICON_MORE, title: 'Column options', attrs: { 'aria-label': `Options for column ${c.name}` } }));
+      th.append(el('div', { class: 'resize', attrs: { 'aria-hidden': 'true' } }));
+    }
+    hr.append(th);
+  });
+  if (state.edit) hr.append(el('th', { class: 'addcol' }, el('div', { class: 'th-in' }, el('button', { class: 'hbtn addcolbtn', type: 'button', text: '+', title: 'Add column', attrs: { 'aria-label': 'Add column' } }))));
+  thead.append(hr);
+  t.append(thead);
+
+  const tb = el('tbody');
+  const vis = d.rows.filter(rowVisible);
+  for (const r of vis) {
+    const idx = d.rows.indexOf(r);
+    const tr = el('tr');
+    tr.dataset.row = r.id;
+    if (r.colour !== 'none') tr.classList.add('tint-' + r.colour);
+    const g = el('td', { class: 'gutter' }, el('span', { class: 'num', text: String(idx + 1) }));
+    if (state.edit) g.append(el('button', { class: 'hbtn rowmenu', type: 'button', html: ICON_MORE, title: 'Row options', attrs: { 'aria-label': `Options for row ${idx + 1}` } }));
+    tr.append(g);
+    cols.forEach((c, i) => {
+      const td = el('td');
+      td.dataset.col = c.id;
+      td.dataset.label = c.name;
+      if (i === 0) td.dataset.first = '';
+      const st = r.styles[c.id];
+      if (st && st.bg && TINTS.includes(st.bg)) td.style.background = `var(--t-${st.bg})`;
+      if (st && st.bold) td.classList.add('b');
+      td.append(renderCell(c, r.cells[c.id]));
+      tr.append(td);
+    });
+    if (state.edit) tr.append(el('td', { class: 'addcol-spacer' }));
+    tb.append(tr);
+  }
+  if (!vis.length) {
+    const msg = d.rows.length ? 'No rows match. Clear the search or the colour filter to see everything.' : (state.edit ? 'The board is empty. Add a row to start.' : 'Nothing on the board yet.');
+    tb.append(el('tr', { class: 'noresults' }, el('td', { colSpan: cols.length + 1 + (state.edit ? 1 : 0), text: msg })));
+  }
+  t.append(tb);
+
+  if (state.edit) {
+    const tf = el('tfoot');
+    tf.append(el('tr', {}, el('td', { class: 'addrow-cell', colSpan: cols.length + 2 }, el('button', { class: 'addrow-btn', type: 'button', text: '+ Add row' }))));
+    t.append(tf);
+  }
+  markSelection();
+}
+
+/* ---------- selection and keyboard ---------- */
+function cellTd(rowId, colId) {
+  return document.querySelector(`#grid tr[data-row="${CSS.escape(rowId)}"] td[data-col="${CSS.escape(colId)}"]`);
+}
+function markSelection() {
+  document.querySelectorAll('#grid td.is-sel').forEach((n) => n.classList.remove('is-sel'));
+  if (!state.sel) return;
+  const td = cellTd(state.sel.rowId, state.sel.colId);
+  if (td) td.classList.add('is-sel');
+}
+function select(rowId, colId) {
+  state.sel = rowId && colId && getRow(rowId) && getCol(colId) ? { rowId, colId } : null;
+  markSelection();
+  if (state.sel) {
+    const td = cellTd(rowId, colId);
+    if (td) td.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+  renderToolbar();
+}
+function move(dr, dc) {
+  if (!state.sel) return;
+  const rows = state.doc.rows.filter(rowVisible).map((r) => r.id);
+  const cols = state.doc.columns.map((c) => c.id);
+  let ri = rows.indexOf(state.sel.rowId), ci = cols.indexOf(state.sel.colId);
+  if (ri < 0 || ci < 0) return;
+  ri = Math.max(0, Math.min(rows.length - 1, ri + dr));
+  ci = Math.max(0, Math.min(cols.length - 1, ci + dc));
+  select(rows[ri], cols[ci]);
+}
+
+/* ---------- in-cell editing ---------- */
+function startEdit(initial) {
+  if (!state.edit || !state.sel || state.editing) return;
+  const { rowId, colId } = state.sel;
+  const td = cellTd(rowId, colId);
+  const row = getRow(rowId), col = getCol(colId);
+  if (!td || !row || !col) return;
+  closeMenu();
+  state.editing = { rowId, colId };
+  td.classList.add('is-editing');
+  const box = td.querySelector('.cell');
+  box.textContent = '';
+  if (col.type === 'tags') tagEditor(box, row, col, initial);
+  else textEditor(box, row, col, initial);
+}
+
+function finishEdit(newVal, moveBy) {
+  const ed = state.editing;
+  if (!ed) return;
+  state.editing = null;
+  const row = getRow(ed.rowId), col = getCol(ed.colId);
+  let changed = false;
+  if (row && col && newVal !== undefined) {
+    const empty = col.type === 'tags' ? [] : '';
+    changed = JSON.stringify(row.cells[col.id] ?? empty) !== JSON.stringify(newVal);
+    if (changed) { checkpoint(); row.cells[col.id] = newVal; }
+  }
+  if (changed) { renderAll(); scheduleSave(); } else renderGrid();
+  select(ed.rowId, ed.colId);
+  if (moveBy) move(moveBy[0], moveBy[1]);
+  $('#sheet').focus({ preventScroll: true });
+}
+
+function insertAtCaret(ta, s) {
+  const a = ta.selectionStart, b = ta.selectionEnd;
+  ta.value = ta.value.slice(0, a) + s + ta.value.slice(b);
+  ta.selectionStart = ta.selectionEnd = a + s.length;
+}
+
+function textEditor(box, row, col, initial) {
+  const ta = el('textarea', { class: 'ed', rows: 1, attrs: { 'aria-label': `Edit ${col.name}` } });
+  ta.value = initial != null ? initial : String(row.cells[col.id] ?? '');
+  box.append(ta);
+  const fit = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+  fit();
+  ta.addEventListener('input', fit);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+  let done = false;
+  const end = (v, mv) => { if (done) return; done = true; finishEdit(v, mv); };
+  ta.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); end(undefined); }
+    else if (e.key === 'Enter' && e.altKey) { e.preventDefault(); insertAtCaret(ta, '\n'); fit(); }
+    else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); end(ta.value, [1, 0]); }
+    else if (e.key === 'Enter' && !e.shiftKey && !COARSE) { e.preventDefault(); end(ta.value, [1, 0]); }
+    else if (e.key === 'Tab') { e.preventDefault(); end(ta.value, [0, e.shiftKey ? -1 : 1]); }
+  });
+  ta.addEventListener('blur', () => end(ta.value));
+}
+
+function tagEditor(box, row, col, initial) {
+  const tags = Array.isArray(row.cells[col.id]) ? [...row.cells[col.id]] : [];
+  const wrap = el('div', { class: 'tag-ed' });
+  const chips = el('span', { class: 'tag-ed' });
+  const inp = el('input', { type: 'text', class: 'tag-in', placeholder: 'Type a paper, press Enter', attrs: { list: 'tagList', 'aria-label': `Add to ${col.name}`, autocomplete: 'off' } });
+  const draw = () => {
+    chips.textContent = '';
+    tags.forEach((t, i) => {
+      const x = el('button', { class: 'x', type: 'button', text: '\u00d7', title: 'Remove', attrs: { 'aria-label': `Remove ${t}` } });
+      x.addEventListener('pointerdown', (e) => e.preventDefault());
+      x.onclick = () => { tags.splice(i, 1); draw(); inp.focus(); };
+      chips.append(el('span', { class: 'tag' }, document.createTextNode(t), x));
+    });
+  };
+  draw();
+  wrap.append(chips, inp);
+  box.append(wrap);
+  if (initial != null) inp.value = initial;
+  inp.focus();
+  const addPending = () => {
+    const v = inp.value.trim();
+    if (v && !tags.includes(v)) tags.push(v);
+    inp.value = '';
+  };
+  let done = false;
+  const end = (save, mv) => { if (done) return; done = true; if (save) { addPending(); finishEdit(tags, mv); } else finishEdit(undefined); };
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); if (inp.value.trim()) { addPending(); draw(); } else end(true, [1, 0]); }
+    else if (e.key === 'Backspace' && !inp.value && tags.length) { tags.pop(); draw(); }
+    else if (e.key === 'Escape') { e.preventDefault(); end(false); }
+    else if (e.key === 'Tab') { e.preventDefault(); end(true, [0, e.shiftKey ? -1 : 1]); }
+  });
+  inp.addEventListener('blur', () => setTimeout(() => { if (!wrap.contains(document.activeElement)) end(true); }, 0));
+}
+
+/* ---------- changes, undo, save ---------- */
+function checkpoint() {
+  state.undo.push(JSON.stringify(state.doc));
+  if (state.undo.length > 100) state.undo.shift();
+  state.redo.length = 0;
+}
+function mutate(fn) {
+  checkpoint();
+  fn(state.doc);
+  renderAll();
+  scheduleSave();
+}
+function fixSel() {
+  if (state.sel && (!getRow(state.sel.rowId) || !getCol(state.sel.colId))) state.sel = null;
+}
+function undo() {
+  if (!state.undo.length) return;
+  state.redo.push(JSON.stringify(state.doc));
+  state.doc = normalise(JSON.parse(state.undo.pop()));
+  fixSel(); renderAll(); scheduleSave();
+}
+function redo() {
+  if (!state.redo.length) return;
+  state.undo.push(JSON.stringify(state.doc));
+  state.doc = normalise(JSON.parse(state.redo.pop()));
+  fixSel(); renderAll(); scheduleSave();
+}
+
+function setStatus(text, bad) {
+  const s = $('#status');
+  s.textContent = text;
+  s.classList.toggle('bad', !!bad);
+}
+function scheduleSave() {
+  state.dirty = true;
+  if (!state.edit) return;
+  setStatus('Unsaved changes');
+  clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(save, 900);
+}
+async function save() {
+  clearTimeout(state.saveTimer);
+  if (!state.key || !state.dirty || state.conflict) return;
+  if (state.saving) { state.saveAgain = true; return; }
+  state.saving = true;
+  setStatus('Saving');
+  try {
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-edit-key': state.key },
+      body: JSON.stringify({ doc: state.doc, baseVersion: state.version }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) {
+      state.version = j.version; state.updatedAt = j.updatedAt; state.dirty = false;
+      setStatus('All changes saved');
+      $('#updated').textContent = `Last updated ${fmtLocal(state.updatedAt)}`;
+    } else if (r.status === 409) {
+      state.conflict = true;
+      setStatus('Not saved', true);
+      toast('This board was changed from another tab or device. Copy anything you need, then reload to get the latest version.', 'Reload', () => { state.dirty = false; location.reload(); }, true);
+    } else if (r.status === 401 || r.status === 429) {
+      setStatus('Not saved', true);
+      forgetKey();
+      leaveEdit(true);
+      toast(`${j.error || 'Edit password not accepted.'} Your changes are still on this page; choose Edit to sign in and save them.`);
+    } else {
+      setStatus(j.error || 'Not saved. Retrying shortly', true);
+      if (r.status >= 500) state.saveTimer = setTimeout(save, 6000);
+    }
+  } catch (_) {
+    setStatus('No connection. Retrying shortly', true);
+    state.saveTimer = setTimeout(save, 6000);
+  } finally {
+    state.saving = false;
+    if (state.saveAgain) { state.saveAgain = false; save(); }
+  }
+}
+
+/* ---------- edit mode ---------- */
+function storedKey() { return sessionStorage.getItem(KEY_STORE) || localStorage.getItem(KEY_STORE); }
+function forgetKey() { sessionStorage.removeItem(KEY_STORE); localStorage.removeItem(KEY_STORE); state.key = null; }
+async function tryKey(pw) {
+  const r = await fetch(AUTH, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
+  const j = await r.json().catch(() => ({}));
+  return { ok: r.ok, error: j.error, storage: j.storage };
+}
+async function enterEdit() {
+  if (!state.reachable) { toast('Editing works once the site is deployed on Vercel. This copy is read-only.'); return; }
+  const saved = storedKey();
+  if (saved) {
+    const res = await tryKey(saved).catch(() => ({ ok: false }));
+    if (res.ok) { state.key = saved; return startEditing(res.storage); }
+    forgetKey();
+  }
+  let storage = null, remember = true;
+  const vals = await formDialog({
+    title: 'Edit the board',
+    lead: 'Only the board owner can edit. Everyone else can view without signing in.',
+    fields: [
+      { name: 'pw', label: 'Edit password', type: 'password', autocomplete: 'current-password' },
+      { name: 'remember', label: 'Keep me signed in on this device', type: 'checkbox', value: true },
+    ],
+    submit: 'Start editing',
+    onSubmit: async (v) => {
+      if (!v.pw) return 'Enter the edit password.';
+      const res = await tryKey(v.pw).catch(() => ({ ok: false, error: 'No connection. Check your network and try again.' }));
+      if (!res.ok) return res.error || 'That password is not right.';
+      storage = res.storage; remember = v.remember;
+      return null;
+    },
+  });
+  if (!vals) return;
+  state.key = vals.pw;
+  (remember ? localStorage : sessionStorage).setItem(KEY_STORE, vals.pw);
+  startEditing(storage);
+}
+function startEditing(storage) {
+  state.edit = true;
+  state.conflict = false;
+  renderAll();
+  if (storage !== 'connected') setStatus('Storage is not connected, so changes will not be saved. See the README.', true);
+  else if (state.dirty) scheduleSave();
+  else setStatus('All changes saved');
+}
+function leaveEdit(silent) {
+  if (state.editing) { const a = document.activeElement; if (a && a.blur) a.blur(); }
+  if (!silent && state.dirty) save();
+  state.edit = false;
+  state.sel = null;
+  closeMenu();
+  renderAll();
+}
+
+/* ---------- board operations ---------- */
+function setCellStyle(patch) {
+  if (!state.sel) return;
+  const row = getRow(state.sel.rowId);
+  if (!row) return;
+  mutate(() => {
+    const st = { ...(row.styles[state.sel.colId] || {}), ...patch };
+    Object.keys(st).forEach((k) => { if (st[k] === undefined || st[k] === false) delete st[k]; });
+    if (Object.keys(st).length) row.styles[state.sel.colId] = st; else delete row.styles[state.sel.colId];
+  });
+}
+function toggleBold() {
+  if (!state.sel) return;
+  const row = getRow(state.sel.rowId);
+  const st = row && row.styles[state.sel.colId];
+  setCellStyle({ bold: !(st && st.bold) });
+}
+function clearCell() {
+  if (!state.sel) return;
+  const row = getRow(state.sel.rowId), col = getCol(state.sel.colId);
+  const v = row.cells[col.id];
+  if (v === undefined || v === '' || (Array.isArray(v) && !v.length)) return;
+  mutate(() => { row.cells[col.id] = col.type === 'tags' ? [] : ''; });
+}
+function newRow() { return { id: uid(), colour: 'none', cells: {}, styles: {} }; }
+function insertRow(index) {
+  const r = newRow();
+  mutate((d) => { d.rows.splice(index, 0, r); });
+  if (state.filter.text || state.filter.colour || state.filter.tag) { state.filter = { text: '', colour: null, tag: null }; $('#search').value = ''; renderAll(); }
+  const first = state.doc.columns[0];
+  if (first) select(r.id, first.id);
+}
+function moveRow(id, delta) {
+  const rows = state.doc.rows, i = rows.findIndex((r) => r.id === id), j = i + delta;
+  if (i < 0 || j < 0 || j >= rows.length) return;
+  mutate(() => { const [r] = rows.splice(i, 1); rows.splice(j, 0, r); });
+}
+function duplicateRow(id) {
+  const i = state.doc.rows.findIndex((r) => r.id === id);
+  const copy = JSON.parse(JSON.stringify(state.doc.rows[i]));
+  copy.id = uid();
+  mutate((d) => { d.rows.splice(i + 1, 0, copy); });
+}
+async function deleteRow(id) {
+  const row = getRow(id), first = state.doc.columns[0];
+  const name = first ? cellText(row, first).split('\n')[0].trim() : '';
+  const ok = await formDialog({ title: name ? `Delete the ${name} row?` : 'Delete this row?', lead: 'You can bring it back with Undo.', fields: [], submit: 'Delete row', danger: true });
+  if (!ok) return;
+  mutate((d) => { d.rows = d.rows.filter((r) => r.id !== id); });
+  fixSel(); renderToolbar();
+}
+async function addColumn(index) {
+  const v = await formDialog({
+    title: 'Add column',
+    fields: [
+      { name: 'name', label: 'Column name' },
+      { name: 'type', label: 'Type', type: 'select', value: 'text', options: [['text', 'Text (wraps over lines)'], ['tags', 'Tags (like Papers)']] },
+    ],
+    submit: 'Add column',
+    onSubmit: (x) => (x.name.trim() ? null : 'Give the column a name.'),
+  });
+  if (!v) return;
+  const c = { id: uid(), name: v.name.trim(), type: v.type === 'tags' ? 'tags' : 'text', width: 200 };
+  mutate((d) => { d.columns.splice(index, 0, c); });
+  const row = state.doc.rows.find(rowVisible);
+  if (row) select(row.id, c.id);
+}
+async function renameColumn(id) {
+  const c = getCol(id);
+  const v = await formDialog({ title: 'Rename column', fields: [{ name: 'name', label: 'Column name', value: c.name }], submit: 'Rename', onSubmit: (x) => (x.name.trim() ? null : 'Give the column a name.') });
+  if (v) mutate(() => { c.name = v.name.trim(); });
+}
+function setColumnType(id, type) {
+  const c = getCol(id);
+  if (c.type === type) return;
+  mutate((d) => {
+    for (const r of d.rows) {
+      const v = r.cells[c.id];
+      if (type === 'tags') r.cells[c.id] = stripStars(v).split(/[\n;]+/).map((s) => s.trim()).filter(Boolean);
+      else r.cells[c.id] = Array.isArray(v) ? v.join('\n') : '';
+    }
+    c.type = type;
+  });
+}
+function moveColumn(id, delta) {
+  const cols = state.doc.columns, i = cols.findIndex((c) => c.id === id), j = i + delta;
+  if (i < 0 || j < 0 || j >= cols.length) return;
+  mutate(() => { const [c] = cols.splice(i, 1); cols.splice(j, 0, c); });
+}
+async function deleteColumn(id) {
+  const c = getCol(id);
+  const ok = await formDialog({ title: `Delete the ${c.name} column?`, lead: 'Everything in this column goes with it. You can bring it back with Undo.', fields: [], submit: 'Delete column', danger: true });
+  if (!ok) return;
+  mutate((d) => {
+    d.columns = d.columns.filter((x) => x.id !== id);
+    for (const r of d.rows) { delete r.cells[id]; delete r.styles[id]; }
+  });
+  fixSel(); renderToolbar();
+}
+async function renameBoard() {
+  const v = await formDialog({ title: 'Rename the board', fields: [{ name: 'title', label: 'Board name', value: state.doc.meta.title }], submit: 'Rename', onSubmit: (x) => (x.title.trim() ? null : 'Give the board a name.') });
+  if (v) mutate((d) => { d.meta.title = v.title.trim(); });
+}
+async function editKey() {
+  const current = Object.fromEntries(state.doc.meta.legend.map((l) => [l.colour, l.label]));
+  const v = await formDialog({
+    title: 'Colour key',
+    lead: 'Say what each row colour means. Leave a colour blank to hide it from the key.',
+    fields: TINTS.map((c) => ({ name: c, label: COLOUR_NAMES[c], swatch: c, value: current[c] || '' })),
+    submit: 'Save key',
+  });
+  if (!v) return;
+  mutate((d) => { d.meta.legend = TINTS.filter((c) => v[c].trim()).map((c) => ({ colour: c, label: v[c].trim() })); });
+}
+
+/* ---------- menus ---------- */
+function openMenu(anchor, items) {
+  const m = $('#menu');
+  m.textContent = '';
+  for (const it of items) {
+    if (it === '-') { m.append(el('div', { class: 'sep' })); continue; }
+    if (it.swatches) {
+      const row = el('div', { class: 'swatches' });
+      for (const c of ['none', ...TINTS]) {
+        const b = el('button', { class: 'swatch' + (c === 'none' ? ' none' : ''), type: 'button', title: COLOUR_NAMES[c], attrs: { 'aria-label': COLOUR_NAMES[c], 'aria-pressed': String(it.current === c) } });
+        if (c !== 'none') b.style.background = `var(--t-${c})`;
+        b.onclick = () => { closeMenu(); it.pick(c); };
+        row.append(b);
+      }
+      m.append(el('div', { class: 'msw' }, el('span', { class: 'msw-label', text: it.label }), row));
+      continue;
+    }
+    const b = el('button', { class: 'item' + (it.danger ? ' danger' : ''), type: 'button', attrs: { role: 'menuitem' } }, el('span', { text: it.label }));
+    if (it.checked) b.append(el('span', { text: '\u2713', attrs: { 'aria-hidden': 'true' } }));
+    if (it.checked !== undefined) b.setAttribute('aria-checked', String(!!it.checked));
+    b.disabled = !!it.disabled;
+    b.onclick = () => { closeMenu(); it.action(); };
+    m.append(b);
+  }
+  m.hidden = false;
+  menuOpenedAt = Date.now();
+  const r = anchor.getBoundingClientRect();
+  const mw = m.offsetWidth, mh = m.offsetHeight;
+  const x = Math.max(8, Math.min(r.left, innerWidth - mw - 8));
+  let y = r.bottom + 4;
+  if (y + mh > innerHeight - 8) y = Math.max(8, r.top - mh - 4);
+  m.style.left = x + 'px';
+  m.style.top = y + 'px';
+  const f = m.querySelector('.item:not(:disabled)');
+  if (f) f.focus();
+}
+let menuOpenedAt = 0;
+function closeMenu() { $('#menu').hidden = true; }
+function closeMenuOnScroll() { if (Date.now() - menuOpenedAt > 300) closeMenu(); }
+
+function openColMenu(id, anchor) {
+  const c = getCol(id), i = state.doc.columns.indexOf(c), n = state.doc.columns.length;
+  openMenu(anchor, [
+    { label: 'Rename column', action: () => renameColumn(id) },
+    { label: 'Text column', checked: c.type === 'text', action: () => setColumnType(id, 'text') },
+    { label: 'Tags column', checked: c.type === 'tags', action: () => setColumnType(id, 'tags') },
+    '-',
+    { label: 'Insert column left', action: () => addColumn(i) },
+    { label: 'Insert column right', action: () => addColumn(i + 1) },
+    { label: 'Move left', disabled: i === 0, action: () => moveColumn(id, -1) },
+    { label: 'Move right', disabled: i === n - 1, action: () => moveColumn(id, 1) },
+    '-',
+    { label: 'Delete column', danger: true, disabled: n === 1, action: () => deleteColumn(id) },
+  ]);
+}
+function openRowMenu(id, anchor) {
+  const r = getRow(id), i = state.doc.rows.indexOf(r), n = state.doc.rows.length;
+  openMenu(anchor, [
+    { swatches: true, label: 'Row colour', current: r.colour, pick: (c) => mutate(() => { r.colour = c; }) },
+    '-',
+    { label: 'Insert row above', action: () => insertRow(i) },
+    { label: 'Insert row below', action: () => insertRow(i + 1) },
+    { label: 'Duplicate row', action: () => duplicateRow(id) },
+    { label: 'Move up', disabled: i === 0, action: () => moveRow(id, -1) },
+    { label: 'Move down', disabled: i === n - 1, action: () => moveRow(id, 1) },
+    '-',
+    { label: 'Delete row', danger: true, action: () => deleteRow(id) },
+  ]);
+}
+
+/* ---------- dialogs and toast ---------- */
+function formDialog({ title, lead, fields, submit = 'Save', danger = false, onSubmit }) {
+  return new Promise((resolve) => {
+    const dlg = $('#dlg');
+    dlg.textContent = '';
+    const form = el('form', { method: 'dialog' });
+    form.append(el('h2', { text: title }));
+    if (lead) form.append(el('p', { class: 'lead', text: lead }));
+    const inputs = {};
+    for (const f of fields) {
+      if (f.type === 'checkbox') {
+        const inp = el('input', { type: 'checkbox', checked: !!f.value });
+        inputs[f.name] = inp;
+        form.append(el('label', { class: 'check' }, inp, el('span', { text: f.label })));
+        continue;
+      }
+      let inp;
+      if (f.type === 'select') {
+        inp = el('select');
+        for (const [v, l] of f.options) inp.append(el('option', { value: v, text: l, selected: v === f.value }));
+      } else {
+        inp = el('input', { type: f.type || 'text', value: f.value || '', attrs: { autocomplete: f.autocomplete || 'off', spellcheck: 'false' } });
+      }
+      inputs[f.name] = inp;
+      const lab = el('span', { class: 'lab' });
+      if (f.swatch) { const sw = el('span', { class: 'swatch', attrs: { 'aria-hidden': 'true' } }); sw.style.background = `var(--t-${f.swatch})`; lab.append(sw); }
+      lab.append(document.createTextNode(f.label));
+      form.append(el('label', { class: 'field' }, lab, inp));
+    }
+    const err = el('p', { class: 'err', attrs: { role: 'alert' } });
+    const cancel = el('button', { class: 'btn', type: 'button', text: 'Cancel' });
+    const ok = el('button', { class: 'btn primary', type: 'submit', text: submit });
+    if (danger) { ok.style.background = 'var(--danger)'; ok.style.color = '#fff'; }
+    form.append(err, el('div', { class: 'dlg-actions' }, cancel, ok));
+    dlg.append(form);
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; if (dlg.open) dlg.close(); resolve(v); };
+    cancel.onclick = () => finish(null);
+    dlg.oncancel = (e) => { e.preventDefault(); finish(null); };
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const vals = {};
+      for (const [k, inp] of Object.entries(inputs)) vals[k] = inp.type === 'checkbox' ? inp.checked : inp.value;
+      if (onSubmit) {
+        ok.disabled = true; err.textContent = '';
+        const msg = await onSubmit(vals);
+        ok.disabled = false;
+        if (msg) { err.textContent = msg; return; }
+      }
+      finish(fields.length ? vals : true);
+    };
+    dlg.showModal();
+    const firstInput = form.querySelector('input, select');
+    (firstInput || ok).focus();
+  });
+}
+
+let toastTimer = null;
+function toast(text, actionLabel, action, sticky) {
+  const t = $('#toast');
+  t.textContent = '';
+  t.append(el('span', { text }));
+  if (actionLabel) { const b = el('button', { type: 'button', text: actionLabel }); b.onclick = () => { t.hidden = true; action(); }; t.append(b); }
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  if (!sticky) toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
+}
+
+/* ---------- CSV ---------- */
+function downloadCsv() {
+  const d = state.doc;
+  const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
+  const lines = [d.columns.map((c) => q(c.name)).join(',')];
+  for (const r of d.rows) lines.push(d.columns.map((c) => q(c.type === 'tags' ? (r.cells[c.id] || []).join('; ') : stripStars(r.cells[c.id]))).join(','));
+  const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = el('a', { href: URL.createObjectURL(blob), download: 'conference-board.csv' });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ---------- column resizing ---------- */
+function startResize(e, handle) {
+  const th = handle.closest('th'), col = getCol(th.dataset.col);
+  if (!col) return;
+  e.preventDefault();
+  const startX = e.clientX, startW = col.width, before = JSON.stringify(state.doc);
+  const colEl = document.querySelector(`#grid col[data-col="${CSS.escape(col.id)}"]`);
+  const table = $('#grid');
+  const baseTable = parseFloat(table.style.width) - startW;
+  handle.classList.add('on');
+  handle.setPointerCapture(e.pointerId);
+  const onMove = (ev) => {
+    col.width = clampW(startW + ev.clientX - startX);
+    colEl.style.width = col.width + 'px';
+    table.style.width = baseTable + col.width + 'px';
+  };
+  const onUp = () => {
+    handle.classList.remove('on');
+    handle.removeEventListener('pointermove', onMove);
+    handle.removeEventListener('pointerup', onUp);
+    handle.removeEventListener('pointercancel', onUp);
+    if (col.width !== startW) {
+      state.undo.push(before); state.redo.length = 0;
+      renderToolbar(); scheduleSave();
+    }
+  };
+  handle.addEventListener('pointermove', onMove);
+  handle.addEventListener('pointerup', onUp);
+  handle.addEventListener('pointercancel', onUp);
+}
+
+/* ---------- wiring ---------- */
+const grid = $('#grid');
+grid.addEventListener('pointerdown', (e) => {
+  const h = e.target.closest('.resize');
+  if (h && state.edit) startResize(e, h);
+});
+grid.addEventListener('click', (e) => {
+  const t = e.target;
+  const cm = t.closest('.colmenu');
+  if (cm) { openColMenu(cm.closest('th').dataset.col, cm); return; }
+  const rm = t.closest('.rowmenu');
+  if (rm) { openRowMenu(rm.closest('tr').dataset.row, rm); return; }
+  if (t.closest('.addcolbtn')) { addColumn(state.doc.columns.length); return; }
+  if (t.closest('.addrow-btn')) { insertRow(state.doc.rows.length); return; }
+  const tag = t.closest('.tag');
+  if (tag && !state.edit && tag.dataset.tag) {
+    state.filter.tag = state.filter.tag === tag.dataset.tag ? null : tag.dataset.tag;
+    renderAll(); return;
+  }
+  if (!state.edit) return;
+  const td = t.closest('td[data-col]');
+  if (!td || td.classList.contains('is-editing')) return;
+  const rowId = td.closest('tr').dataset.row, colId = td.dataset.col;
+  if (state.sel && state.sel.rowId === rowId && state.sel.colId === colId) startEdit();
+  else select(rowId, colId);
+});
+grid.addEventListener('dblclick', (e) => {
+  if (!state.edit) return;
+  const td = e.target.closest('td[data-col]');
+  if (!td || td.classList.contains('is-editing')) return;
+  select(td.closest('tr').dataset.row, td.dataset.col);
+  startEdit();
+});
+
+document.addEventListener('keydown', (e) => {
+  if ($('#dlg').open) return;
+  if (!$('#menu').hidden) { if (e.key === 'Escape') closeMenu(); return; }
+  const inField = e.target.closest && e.target.closest('input, textarea, select');
+  if (!state.edit) {
+    if (e.key === '/' && !inField) { e.preventDefault(); $('#search').focus(); }
+    return;
+  }
+  if (inField) return;
+  const mod = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
+  if (mod && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+  if (mod && k === 'y') { e.preventDefault(); redo(); return; }
+  if (!state.sel || state.editing) return;
+  if (mod && k === 'b') { e.preventDefault(); toggleBold(); return; }
+  if (mod || e.altKey) return;
+  switch (e.key) {
+    case 'ArrowUp': move(-1, 0); break;
+    case 'ArrowDown': move(1, 0); break;
+    case 'ArrowLeft': move(0, -1); break;
+    case 'ArrowRight': move(0, 1); break;
+    case 'Tab': move(0, e.shiftKey ? -1 : 1); break;
+    case 'Enter': case 'F2': startEdit(); break;
+    case 'Delete': case 'Backspace': clearCell(); break;
+    case 'Escape': select(null); break;
+    default:
+      if (e.key.length === 1) { e.preventDefault(); startEdit(e.key); }
+      return;
+  }
+  e.preventDefault();
+});
+
+document.addEventListener('copy', (e) => {
+  if (!state.edit || !state.sel || state.editing || (e.target.closest && e.target.closest('input, textarea'))) return;
+  const row = getRow(state.sel.rowId), col = getCol(state.sel.colId);
+  const v = row.cells[col.id];
+  e.clipboardData.setData('text/plain', col.type === 'tags' ? (v || []).join('\n') : String(v ?? ''));
+  e.preventDefault();
+});
+document.addEventListener('paste', (e) => {
+  if (!state.edit || !state.sel || state.editing || (e.target.closest && e.target.closest('input, textarea'))) return;
+  const text = e.clipboardData.getData('text/plain');
+  if (text == null) return;
+  e.preventDefault();
+  const row = getRow(state.sel.rowId), col = getCol(state.sel.colId);
+  mutate(() => { row.cells[col.id] = col.type === 'tags' ? text.split(/[\n;]+/).map((s) => s.trim()).filter(Boolean) : text.replace(/\r\n?/g, '\n'); });
+});
+
+document.addEventListener('pointerdown', (e) => {
+  const m = $('#menu');
+  if (!m.hidden && !m.contains(e.target) && !e.target.closest('.colmenu, .rowmenu')) closeMenu();
+});
+$('#sheet').addEventListener('scroll', closeMenuOnScroll, { passive: true });
+addEventListener('scroll', closeMenuOnScroll, { passive: true });
+addEventListener('resize', closeMenu);
+
+$('#search').addEventListener('input', (e) => { state.filter.text = e.target.value.trim(); renderHeader(); renderGrid(); });
+$('#editBtn').onclick = () => (state.edit ? leaveEdit(false) : enterEdit());
+$('#csvBtn').onclick = downloadCsv;
+$('#undoBtn').onclick = undo;
+$('#redoBtn').onclick = redo;
+$('#boldBtn').addEventListener('pointerdown', (e) => e.preventDefault());
+$('#boldBtn').onclick = toggleBold;
+$('#addRowBtn').onclick = () => {
+  const i = state.sel ? state.doc.rows.findIndex((r) => r.id === state.sel.rowId) + 1 : state.doc.rows.length;
+  insertRow(i);
+};
+$('#addColBtn').onclick = () => {
+  const i = state.sel ? state.doc.columns.findIndex((c) => c.id === state.sel.colId) + 1 : state.doc.columns.length;
+  addColumn(i);
+};
+$('#keyBtn').onclick = editKey;
+
+addEventListener('beforeunload', (e) => { if (state.edit && state.dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+// Keep countdowns current, and pick up new versions for people who only view.
+setInterval(async () => {
+  if (state.edit || !state.reachable) { if (!state.editing) { renderHeader(); } return; }
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    const j = await r.json();
+    if (j.version !== state.version) { state.doc = normalise(j.doc); state.version = j.version; state.updatedAt = j.updatedAt; }
+  } catch (_) { /* keep what we have */ }
+  renderAll();
+}, 5 * 60 * 1000);
+
+load();
+})();
+</script>
+</body>
+</html>

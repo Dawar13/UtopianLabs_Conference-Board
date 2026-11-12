@@ -1,0 +1,12 @@
+{
+  "name": "conference-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Utopian Labs conference deadline board: public to view, editable only with the edit password.",
+  "scripts": {
+    "dev": "node scripts/dev.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,250 @@
+{
+ "meta": {
+  "title": "Utopian Labs conference board",
+  "legend": [
+   {
+    "colour": "green",
+    "label": "Top priority"
+   },
+   {
+    "colour": "yellow",
+    "label": "Second tier"
+   },
+   {
+    "colour": "blue",
+    "label": "Not there yet (dates not out, or fallback)"
+   }
+  ]
+ },
+ "columns": [
+  {
+   "id": "conf",
+   "name": "Conference",
+   "type": "text",
+   "width": 150
+  },
+  {
+   "id": "track",
+   "name": "Track",
+   "type": "text",
+   "width": 280
+  },
+  {
+   "id": "papers",
+   "name": "Papers",
+   "type": "tags",
+   "width": 230
+  },
+  {
+   "id": "deadlines",
+   "name": "Deadlines",
+   "type": "text",
+   "width": 250
+  },
+  {
+   "id": "reviews",
+   "name": "Reviews and rebuttal",
+   "type": "text",
+   "width": 210
+  },
+  {
+   "id": "notif",
+   "name": "Notification",
+   "type": "text",
+   "width": 150
+  },
+  {
+   "id": "camera",
+   "name": "Camera-ready",
+   "type": "text",
+   "width": 170
+  },
+  {
+   "id": "dates",
+   "name": "Conference dates",
+   "type": "text",
+   "width": 220
+  },
+  {
+   "id": "loc",
+   "name": "Location",
+   "type": "text",
+   "width": 180
+  }
+ ],
+ "rows": [
+  {
+   "id": "r-cpal",
+   "colour": "green",
+   "cells": {
+    "conf": "CPAL 2027",
+    "track": "Proceedings Track (archival, PMLR, 9 pages)\nRecent Spotlight Track (non-archival, separate row below)\nTutorial proposals: due 10 Dec 2026\nRising Stars Award applications: due 15 Dec 2026",
+    "papers": [
+     "The Symmetry Tax (Mirror Surgery)",
+     "Projection Routing for MoE (candidate)",
+     "Compressed Circuit Tracing (candidate)"
+    ],
+    "deadlines": "Abstract registration\n23 Nov 2026, 23:59 AoE\n\nFull paper\n5 Dec 2026, 23:59 AoE",
+    "reviews": "Reviews out and rebuttal: 11 to 17 Jan 2027\nAuthor-reviewer discussion: 18 to 22 Jan 2027",
+    "notif": "1 Feb 2027",
+    "camera": "12 Feb 2027",
+    "dates": "23 to 26 Mar 2027",
+    "loc": "Tokyo, Japan (Hitotsubashi Hall)"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-icwm",
+   "colour": "green",
+   "cells": {
+    "conf": "ICWM 2027",
+    "track": "Main conference (one paper deadline in the call)",
+    "papers": [
+     "Listening Is Learned Last",
+     "What You Can Control, You Can Align (fallback)",
+     "Look Before You Leap (parked)"
+    ],
+    "deadlines": "Full paper (no separate abstract deadline)\n22 Dec 2026, 23:59 AoE",
+    "reviews": "Phase 1 rejections: 8 Jan 2027\nReviews out: 9 Feb 2027\nRebuttal: 9 to 16 Feb 2027",
+    "notif": "Final decisions: 2 Mar 2027",
+    "camera": "23 Mar 2027",
+    "dates": "23 to 26 May 2027 (main programme 24 to 26 May)",
+    "loc": "New York Marriott Marquis, New York, USA"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-acl",
+   "colour": "green",
+   "cells": {
+    "conf": "ACL 2027",
+    "track": "Long (8 pages) and short (4 pages) papers through ACL Rolling Review (ARR), January cycle, then committed to ACL (commitment date not out yet)\nSpecial theme: homogenization and knowledge collapse in LLMs\nSystem demos, industry track and Student Research Workshop usually have separate, later calls",
+    "papers": [
+     "Surprise, Not Rarity",
+     "What Abstention Deletes",
+     "Where Does the AI Voice Come From?",
+     "Unreachable Knowledge"
+    ],
+    "deadlines": "Full paper to ARR (no separate abstract deadline)\n4 Jan 2027, 23:59 AoE",
+    "reviews": "ARR review and author response dates not out yet",
+    "notif": "Not out yet",
+    "camera": "Not out yet",
+    "dates": "17 to 22 Aug 2027\nTutorials 17 Aug, workshops 18 to 19 Aug, main 20 to 22 Aug (per the call; the programme page shows different days)",
+    "loc": "Kyoto, Japan"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-ijcai",
+   "colour": "green",
+   "cells": {
+    "conf": "IJCAI 2027",
+    "track": "Main track\nOther 2027 track calls not out yet. In 2026 IJCAI also ran special tracks and a Survey Track on the main deadline, plus demos, journal and sister-conference tracks on later deadlines",
+    "papers": [],
+    "deadlines": "Abstract\n4 Jan 2027, 23:59 AoE\n\nFull paper\n11 Jan 2027, 23:59 AoE",
+    "reviews": "Not out yet",
+    "notif": "21 Apr 2027",
+    "camera": "Not out yet",
+    "dates": "7 to 13 Aug 2027\nSatellite event in Hengqin, China, 15 to 17 Aug",
+    "loc": "Kyoto, Japan"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-sigir",
+   "colour": "green",
+   "cells": {
+    "conf": "SIGIR 2027",
+    "track": "Full papers track\nShort papers and other tracks have their own calls with later deadlines (not out yet)",
+    "papers": [],
+    "deadlines": "Abstract (mandatory)\n14 Jan 2027, 23:59 AoE\n\nFull paper\n21 Jan 2027, 23:59 AoE\n\nThe official site gives no time zone; AoE assumed",
+    "reviews": "Not out yet",
+    "notif": "5 Apr 2027",
+    "camera": "30 Apr 2027 (with author registration)",
+    "dates": "18 to 24 Jul 2027",
+    "loc": "San Jose, California, USA (satellite venue in Tianjin, China)"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-icml",
+   "colour": "yellow",
+   "cells": {
+    "conf": "ICML 2027",
+    "track": "Main track (submission site opens 8 Jan 2027 on OpenReview)\nPosition Paper Track: separate call and OpenReview site; check its dates",
+    "papers": [],
+    "deadlines": "Abstract\n14 Jan 2027, 23:59 AoE\n\nFull paper\n22 Jan 2027, 23:59 AoE",
+    "reviews": "First-stage rejections: 23 Feb 2027",
+    "notif": "Final decisions: 3 May 2027",
+    "camera": "Not out yet",
+    "dates": "31 Jul to 6 Aug 2027\nExpo 31 Jul, tutorials 1 Aug, main 2 to 4 Aug, workshops 5 to 6 Aug",
+    "loc": "Rio de Janeiro, Brazil"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-cpal-spot",
+   "colour": "blue",
+   "cells": {
+    "conf": "CPAL 2027 (Spotlight)",
+    "track": "Recent Spotlight Track (non-archival, for recent or already published work)\nFallback route for CPAL",
+    "papers": [],
+    "deadlines": "Full paper (no separate abstract deadline)\n18 Jan 2027, 23:59 AoE",
+    "reviews": "No rebuttal",
+    "notif": "1 Feb 2027",
+    "camera": "None",
+    "dates": "23 to 26 Mar 2027",
+    "loc": "Tokyo, Japan"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-colt",
+   "colour": "yellow",
+   "cells": {
+    "conf": "COLT 2027",
+    "track": "Main track; at least one author must present in person\nCOLT usually runs an open problems session with a separate, later call",
+    "papers": [],
+    "deadlines": "Full paper (no separate abstract deadline)\n29 Jan 2027, 23:59 AoE",
+    "reviews": "Reviews out: 29 Mar 2027\nAuthor response due: 2 Apr 2027",
+    "notif": "On or before 3 May 2027",
+    "camera": "Not out yet",
+    "dates": "28 Jun to 2 Jul 2027",
+    "loc": "Tokyo, Japan"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-cvprw",
+   "colour": "blue",
+   "cells": {
+    "conf": "CVPR 2027 workshops",
+    "track": "Workshop papers, archival or non-archival depending on the workshop\nEach workshop sets its own deadline; accepted workshops are announced around 22 Dec 2026\nMain CVPR track closes 16 Nov 2026 (not targeted)",
+    "papers": [],
+    "deadlines": "Not out yet\nExpected Feb to Mar 2027 (estimate)",
+    "reviews": "Set by each workshop",
+    "notif": "Set by each workshop",
+    "camera": "Archival workshop papers: author details by 29 Mar 2027, camera-ready by 23 Apr 2027",
+    "dates": "Workshops 20 to 21 Jun 2027 (main conference 22 to 25 Jun)",
+    "loc": "Seattle, Washington, USA"
+   },
+   "styles": {}
+  },
+  {
+   "id": "r-iccv",
+   "colour": "blue",
+   "cells": {
+    "conf": "ICCV 2027",
+    "track": "Main track; workshops follow later",
+    "papers": [],
+    "deadlines": "Not out yet\nExpected early Mar 2027 (estimate from the 2025 cycle)",
+    "reviews": "Not out yet",
+    "notif": "Not out yet",
+    "camera": "Not out yet",
+    "dates": "2 to 8 Oct 2027",
+    "loc": "Hong Kong"
+   },
+   "styles": {}
+  }
+ ]
+}
