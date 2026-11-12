@@ -24,6 +24,12 @@
    "width": 150
   },
   {
+   "id": "links",
+   "name": "Official links",
+   "type": "text",
+   "width": 190
+  },
+  {
    "id": "track",
    "name": "Track",
    "type": "text",
@@ -78,6 +84,7 @@
    "colour": "green",
    "cells": {
     "conf": "CPAL 2027",
+    "links": "[Website](https://cpal.cc/)\n[Call for papers](https://cpal.cc/call_for_papers/)\n[Proceedings Track](https://cpal.cc/proceedings_track/)",
     "track": "Proceedings Track (archival, PMLR, 9 pages)\nRecent Spotlight Track (non-archival, separate row below)\nTutorial proposals: due 10 Dec 2026\nRising Stars Award applications: due 15 Dec 2026",
     "papers": [
      "The Symmetry Tax (Mirror Surgery)",
@@ -98,6 +105,7 @@
    "colour": "green",
    "cells": {
     "conf": "ICWM 2027",
+    "links": "[Website](https://icwm.cc/)\n[Call for papers](https://icwm.cc/call-for-papers/)",
     "track": "Main conference (one paper deadline in the call)",
     "papers": [
      "Listening Is Learned Last",
@@ -118,6 +126,7 @@
    "colour": "green",
    "cells": {
     "conf": "ACL 2027",
+    "links": "[Website](https://2027.aclweb.org/)\n[Call for papers](https://2027.aclweb.org/calls/main/)",
     "track": "Long (8 pages) and short (4 pages) papers through ACL Rolling Review (ARR), January cycle, then committed to ACL (commitment date not out yet)\nSpecial theme: homogenization and knowledge collapse in LLMs\nSystem demos, industry track and Student Research Workshop usually have separate, later calls",
     "papers": [
      "Surprise, Not Rarity",
@@ -139,6 +148,7 @@
    "colour": "green",
    "cells": {
     "conf": "IJCAI 2027",
+    "links": "[Website](https://2027.ijcai.org/)\n[Call for papers](https://2027.ijcai.org/ijcai-2027-call-for-papers-main-track/)",
     "track": "Main track\nOther 2027 track calls not out yet. In 2026 IJCAI also ran special tracks and a Survey Track on the main deadline, plus demos, journal and sister-conference tracks on later deadlines",
     "papers": [],
     "deadlines": "Abstract\n4 Jan 2027, 23:59 AoE\n\nFull paper\n11 Jan 2027, 23:59 AoE",
@@ -155,14 +165,15 @@
    "colour": "green",
    "cells": {
     "conf": "SIGIR 2027",
+    "links": "[Website](https://sigir2027.org/)\n[Call for full papers](https://sigir2027.org/pages/submit-full.html)",
     "track": "Full papers track\nShort papers and other tracks have their own calls with later deadlines (not out yet)",
     "papers": [],
     "deadlines": "Abstract (mandatory)\n14 Jan 2027, 23:59 AoE\n\nFull paper\n21 Jan 2027, 23:59 AoE\n\nThe official site gives no time zone; AoE assumed",
     "reviews": "Not out yet",
     "notif": "5 Apr 2027",
     "camera": "30 Apr 2027 (with author registration)",
-    "dates": "18 to 24 Jul 2027",
-    "loc": "San Jose, California, USA (satellite venue in Tianjin, China)"
+    "dates": "19 to 24 Jul 2027\nTutorials 19 Jul, main 20 to 22 Jul, workshops 23 Jul, ICTIR 24 Jul",
+    "loc": "Signia by Hilton San Jose, California, USA (satellite venue in Tianjin, China)"
    },
    "styles": {}
   },
@@ -171,6 +182,7 @@
    "colour": "yellow",
    "cells": {
     "conf": "ICML 2027",
+    "links": "[Website](https://icml.cc/Conferences/2027)\n[Call for papers](https://icml.cc/Conferences/2027/CallForPapers)\n[Dates](https://icml.cc/Conferences/2027/Dates)",
     "track": "Main track (submission site opens 8 Jan 2027 on OpenReview)\nPosition Paper Track: separate call and OpenReview site; check its dates",
     "papers": [],
     "deadlines": "Abstract\n14 Jan 2027, 23:59 AoE\n\nFull paper\n22 Jan 2027, 23:59 AoE",
@@ -187,6 +199,7 @@
    "colour": "blue",
    "cells": {
     "conf": "CPAL 2027 (Spotlight)",
+    "links": "[Website](https://cpal.cc/)\n[Spotlight Track](https://cpal.cc/spotlight_track/)",
     "track": "Recent Spotlight Track (non-archival, for recent or already published work)\nFallback route for CPAL",
     "papers": [],
     "deadlines": "Full paper (no separate abstract deadline)\n18 Jan 2027, 23:59 AoE",
@@ -203,6 +216,7 @@
    "colour": "yellow",
    "cells": {
     "conf": "COLT 2027",
+    "links": "[Website](https://learningtheory.org/colt2027/)\n[Call for papers](https://learningtheory.org/colt2027/cfp.html)",
     "track": "Main track; at least one author must present in person\nCOLT usually runs an open problems session with a separate, later call",
     "papers": [],
     "deadlines": "Full paper (no separate abstract deadline)\n29 Jan 2027, 23:59 AoE",
@@ -219,6 +233,7 @@
    "colour": "blue",
    "cells": {
     "conf": "CVPR 2027 workshops",
+    "links": "[Website](https://cvpr.thecvf.com/Conferences/2027)\n[Dates](https://cvpr.thecvf.com/Conferences/2027/Dates)",
     "track": "Workshop papers, archival or non-archival depending on the workshop\nEach workshop sets its own deadline; accepted workshops are announced around 22 Dec 2026\nMain CVPR track closes 16 Nov 2026 (not targeted)",
     "papers": [],
     "deadlines": "Not out yet\nExpected Feb to Mar 2027 (estimate)",
@@ -235,6 +250,7 @@
    "colour": "blue",
    "cells": {
     "conf": "ICCV 2027",
+    "links": "[Website](https://iccv.thecvf.com/)",
     "track": "Main track; workshops follow later",
     "papers": [],
     "deadlines": "Not out yet\nExpected early Mar 2027 (estimate from the 2025 cycle)",

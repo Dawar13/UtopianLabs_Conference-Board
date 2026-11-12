@@ -36,6 +36,8 @@ Write a date in any text cell like `5 Dec 2026, 23:59 AoE` (or `... UTC`). The b
 
 **Bold text inside a cell**: wrap it in double stars, like `**Full paper**`.
 
+**Links**: paste a web address (`https://...`) into any text cell, or give it a label with `[Call for papers](https://...)`. Links open in a new tab. While editing, a click selects the cell; Ctrl+click (Cmd+click on a Mac) opens the link. The **Official links** column holds each conference's site and call for papers.
+
 **Saving**: every change saves about a second later; the toolbar shows "All changes saved". If the board was changed from another device in the meantime, the page asks you to reload instead of overwriting the newer version.
 
 ## Security

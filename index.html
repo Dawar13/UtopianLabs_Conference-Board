@@ -232,6 +232,9 @@ table.grid { border-collapse: separate; border-spacing: 0; table-layout: fixed; 
 }
 .tag[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .grid.is-edit .tag { cursor: cell; }
+.lnk { color: var(--accent); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+.lnk:hover { text-decoration-thickness: 2px; }
+.grid.is-edit .lnk { cursor: cell; }
 .empty { color: var(--ink-3); font-style: italic; font-size: 13px; font-weight: 400; }
 .hbtn {
   border: 0; background: transparent; color: var(--ink-3);
@@ -375,7 +378,7 @@ dialog p.lead { margin: -6px 0 14px; color: var(--ink-2); font-size: 14px; }
     <button class="btn tb-btn" id="keyBtn" type="button">Colour key</button>
   </div>
   <span class="status" id="status" role="status"></span>
-  <p class="hint">Click a cell to select it; click again, press Enter or just type to edit. Enter saves, Shift+Enter starts a new line, Esc cancels. Write dates as <b>5 Dec 2026, 23:59 AoE</b> to get the IST time and a countdown. Put text between **double stars** to make it bold.</p>
+  <p class="hint">Click a cell to select it; click again, press Enter or just type to edit. Enter saves, Shift+Enter starts a new line, Esc cancels. Write dates as <b>5 Dec 2026, 23:59 AoE</b> to get the IST time and a countdown. Put text between **double stars** to make it bold. Paste a web address, or write <b>[Website](https://…)</b>, to add a link; Ctrl+click opens it while editing.</p>
 </div>
 
 <main class="sheet-wrap" id="sheet" tabindex="-1">
@@ -435,10 +438,15 @@ const clampW = (w) => Math.max(MIN_W, Math.min(MAX_W, Math.round(w) || 180));
 const getCol = (id) => state.doc.columns.find((c) => c.id === id);
 const getRow = (id) => state.doc.rows.find((r) => r.id === id);
 const stripStars = (s) => String(s ?? '').replace(/\*\*/g, '');
+// Links in text cells: [Label](https://...) or a bare https:// address. Only http(s) links are ever made clickable.
+const LINK_RE = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>()]*[^\s<>().,;:!?'"])/gi;
+const MD_LINK_RE = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/gi;
+// Readable text for search and CSV: "[Website](https://x.org)" becomes "Website (https://x.org)".
+const plainText = (s) => stripStars(s).replace(MD_LINK_RE, '$1 ($2)');
 function cellText(row, col) {
   const v = row.cells[col.id];
   if (col.type === 'tags') return Array.isArray(v) ? v.join(', ') : '';
-  return stripStars(v);
+  return plainText(v);
 }
 
 /* ---------- dates ---------- */
@@ -679,7 +687,9 @@ function renderRich(box, text) {
     line.split('**').forEach((part, k) => {
       if (k > 0) bold = !bold;
       if (!part) return;
-      ln.append(bold ? el('strong', { text: part }) : document.createTextNode(part));
+      const nodes = linkify(part);
+      if (bold) ln.append(el('strong', {}, ...nodes));
+      else ln.append(...nodes);
     });
     const t = dates[i];
     if (t) {
@@ -695,6 +705,27 @@ function renderRich(box, text) {
     box.append(ln);
     if (t) box.append(el('div', { class: 'ln ist' + (t <= now ? ' past' : ''), text: fmtIST(t) }));
   });
+}
+
+// Splits text into text nodes and <a> links. Anything that is not a valid http(s) URL stays plain text.
+function linkify(text) {
+  const out = [];
+  let last = 0;
+  for (const m of text.matchAll(LINK_RE)) {
+    const href = m[2] || m[3];
+    let ok = false;
+    try { ok = /^https?:$/.test(new URL(href).protocol); } catch (_) { /* not a URL */ }
+    if (!ok) continue;
+    if (m.index > last) out.push(document.createTextNode(text.slice(last, m.index)));
+    const label = m[1] || href.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '');
+    const a = el('a', { class: 'lnk', href, text: label, target: '_blank', rel: 'noopener noreferrer',
+      title: state.edit ? `${href}\nCtrl+click to open` : href });
+    if (state.edit) a.tabIndex = -1;
+    out.push(a);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(document.createTextNode(text.slice(last)));
+  return out;
 }
 
 function renderCell(col, value) {
@@ -1300,7 +1331,7 @@ function downloadCsv() {
   const d = state.doc;
   const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
   const lines = [d.columns.map((c) => q(c.name)).join(',')];
-  for (const r of d.rows) lines.push(d.columns.map((c) => q(c.type === 'tags' ? (r.cells[c.id] || []).join('; ') : stripStars(r.cells[c.id]))).join(','));
+  for (const r of d.rows) lines.push(d.columns.map((c) => q(c.type === 'tags' ? (r.cells[c.id] || []).join('; ') : plainText(r.cells[c.id]))).join(','));
   const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const a = el('a', { href: URL.createObjectURL(blob), download: 'conference-board.csv' });
   document.body.append(a); a.click(); a.remove();
@@ -1352,6 +1383,11 @@ grid.addEventListener('click', (e) => {
   if (rm) { openRowMenu(rm.closest('tr').dataset.row, rm); return; }
   if (t.closest('.addcolbtn')) { addColumn(state.doc.columns.length); return; }
   if (t.closest('.addrow-btn')) { insertRow(state.doc.rows.length); return; }
+  const link = t.closest('a.lnk');
+  if (link) {
+    if (!state.edit || e.ctrlKey || e.metaKey) return;   // viewing, or Ctrl/Cmd+click while editing: open the link
+    e.preventDefault();                                  // editing: a plain click selects the cell instead
+  }
   const tag = t.closest('.tag');
   if (tag && !state.edit && tag.dataset.tag) {
     state.filter.tag = state.filter.tag === tag.dataset.tag ? null : tag.dataset.tag;
