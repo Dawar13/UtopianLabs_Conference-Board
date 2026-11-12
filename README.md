@@ -19,6 +19,7 @@ Dashboard menu names on Vercel sometimes move; the steps stay the same.
 - The top of the page shows the next deadline with a countdown, and the four after it.
 - Click a colour in the key to show only those rows. Click a paper tag to show only rows with that paper. Use the search box for anything else.
 - **Download CSV** gives a copy that opens in Excel.
+- **Dark mode** / **Light mode** switches the colours. The board opens in light mode; each browser remembers its own choice. Printing always uses light colours.
 
 **Editing (owner only)**
 - Click a cell to select it. Click it again, press Enter, or start typing to edit. Double-click also works.

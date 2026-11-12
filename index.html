@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Conference board</title>
+<script>
+// Apply the saved theme before the page paints, so dark mode does not flash light first. Light is the default.
+try { if (localStorage.getItem('conference-board-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (_) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,8 +42,9 @@
   --font: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
   --font-cond: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark mode is chosen with the toggle in the header. Screen only, so printing always uses the light colours. */
+@media screen {
+  :root[data-theme="dark"] {
     color-scheme: dark;
     --bg: #10151A;
     --surface: #172029;
@@ -97,6 +102,7 @@ h1 .rename:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
 .btn:disabled { opacity: .45; cursor: default; }
+.btn svg { width: 16px; height: 16px; flex: none; }
 
 .upnext {
   display: grid; grid-template-columns: auto 1fr; column-gap: 18px; row-gap: 6px; align-items: center;
@@ -340,6 +346,7 @@ dialog p.lead { margin: -6px 0 14px; color: var(--ink-2); font-size: 14px; }
       <p class="updated" id="updated"></p>
     </div>
     <div class="actions">
+      <button class="btn" id="themeBtn" type="button">Dark mode</button>
       <button class="btn" id="csvBtn" type="button">Download CSV</button>
       <button class="btn primary" id="editBtn" type="button">Edit</button>
     </div>
@@ -396,7 +403,10 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 const DATE_RE = /\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s+(\d{4})(?:,?\s*(?:at\s+)?(\d{1,2}):(\d{2}))?\s*(aoe|utc)\b/i;
 const GUTTER = 44, ADD_W = 44, MIN_W = 70, MAX_W = 900;
 const COARSE = matchMedia('(pointer: coarse)').matches;
-const ICON_MORE = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg>';
+const THEME_STORE = 'conference-board-theme';
+const ICON_MOON = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M13.6 10.1A5.8 5.8 0 0 1 5.9 2.4a5.8 5.8 0 1 0 7.7 7.7z"/></svg>';
+const ICON_SUN = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.2v1.5M8 13.3v1.5M1.2 8h1.5M13.3 8h1.5M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1"/></svg>';
+const ICON_MORE ='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg>';
 
 const state = {
   doc: null, version: 0, updatedAt: null, storage: 'none', reachable: true,
@@ -1417,9 +1427,26 @@ $('#sheet').addEventListener('scroll', closeMenuOnScroll, { passive: true });
 addEventListener('scroll', closeMenuOnScroll, { passive: true });
 addEventListener('resize', closeMenu);
 
-$('#search').addEventListener('input', (e) => { state.filter.text = e.target.value.trim(); renderHeader(); renderGrid(); });
+/* ---------- light / dark mode ---------- */
+function isDark() { return document.documentElement.dataset.theme === 'dark'; }
+function renderThemeBtn() {
+  const dark = isDark(), b = $('#themeBtn');
+  b.innerHTML = `${dark ? ICON_SUN : ICON_MOON}<span>${dark ? 'Light mode' : 'Dark mode'}</span>`;
+  b.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+function toggleTheme() {
+  const dark = !isDark();
+  if (dark) document.documentElement.dataset.theme = 'dark';
+  else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem(THEME_STORE, dark ? 'dark' : 'light'); } catch (_) { /* private mode: still switches, just not remembered */ }
+  renderThemeBtn();
+}
+
+$('#search').addEventListener('input',(e) => { state.filter.text = e.target.value.trim(); renderHeader(); renderGrid(); });
 $('#editBtn').onclick = () => (state.edit ? leaveEdit(false) : enterEdit());
 $('#csvBtn').onclick = downloadCsv;
+$('#themeBtn').onclick = toggleTheme;
+renderThemeBtn();
 $('#undoBtn').onclick = undo;
 $('#redoBtn').onclick = redo;
 $('#boldBtn').addEventListener('pointerdown', (e) => e.preventDefault());
